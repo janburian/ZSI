@@ -1,0 +1,11 @@
+clc
+close all
+clear all
+%% Loading signal from .wav file
+filename = "veta.wav";
+[y,Fs] = audioread(filename); 
+figure; 
+t = length(y) / Fs % time 
+plot(y);
+figure;
+plot(y/Fs)
