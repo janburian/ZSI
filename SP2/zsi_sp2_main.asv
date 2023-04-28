@@ -3,9 +3,19 @@ close all
 clear all
 %% Loading signal from .wav file
 filename = "veta.wav";
-[y,Fs] = audioread(filename); 
+[y,Fs] = audioread(filename);  
+t = length(y) / Fs; % time of signal
+%Ts = 1 / Fs; % perioda vzorkovani
+x = linspace(0, t, length(y));
+
 figure; 
-t = length(y) / Fs % time 
-plot(y);
-figure;
-plot(y/Fs)
+plot(x, y);
+title("Loaded signal");
+xlabel("Time [s]");
+ylabel("Amplitude");
+
+%% Identification of local extrema
+d = diff(y); 
+d_1 = d()
+
+
