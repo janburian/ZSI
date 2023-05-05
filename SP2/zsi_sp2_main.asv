@@ -1,8 +1,9 @@
 clc
 close all
 clear all
+
 %% Loading signal from .wav file
-filename = "veta.wav";
+filename = "veta2.wav";
 [y,Fs] = audioread(filename);  
 t = length(y) / Fs; % time of signal
 %Ts = 1 / Fs; % perioda vzorkovani
@@ -16,6 +17,36 @@ ylabel("Amplitude");
 
 %% Identification of local extrema
 d = diff(y); 
-d_1 = d()
+d_1 = d(1:end-1);
+d_2 = d(2:end);
+
+max_indices = find(d_1 .* d_2 < 0 & d_1 > 0) + 1;
+min_indices = find(d_1 .* d_2 < 0 & d_1 < 0) + 1;
+
+extrema_max = zeros(length(max_indices), 2);
+extrema_min = zeros(length(min_indices), 2);
+
+for i=1:1:length(max_indices)
+    idx_max = max_indices(i); 
+    idx_min = min_indices(i); 
+    
+    extrema_max(i, 1) = y(idx_max);
+    extrema_max(i, 2) = max_indices(i);
+    
+    extrema_min(i, 1) = y(idx_min);
+    extrema_min(i, 2) = min_indices(i);
+end
+
+%% Zero crossings
+for j=1:1:length(y)-1
+    if y(j) > y(j+1) || y(j-1) 
+end
+
+
+
+%% Empirical mode decomposition
+[imf,residual] = emd(y);
+
+
 
 
