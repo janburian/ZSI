@@ -10,7 +10,7 @@ clear all
 filename = "veta.wav";
 [y, Fs] = audioread(filename);  
 t = length(y) / Fs; % time of signal
-%Ts = 1 / Fs; % perioda vzorkovani
+%Ts = 1 / Fs; % sampling period
 x = linspace(0, t, length(y));
 
 figure; 
@@ -36,38 +36,46 @@ end
 
 % Plot of IMFs
 figure
-hold on
-plot(x, IMF_cell{1});
-plot(x, IMF_cell{2});
-plot(x, IMF_cell{4});
-plot(x, IMF_cell{6});
-plot(x, IMF_cell{10});
+for u = [1, 2, 4, 8, 12]
+    hold on
+    plot(x, IMF_cell{u});
+end
 ylim([-0.8 0.8])
 xlabel('Time [s]')
 ylabel('Amplitude [dB]')
 title('IMF comparison')
-legend('1.IMF','2.IMF','4.IMF','6.IMF','10.IMF')
+legend('1. IMF','2.IMF','4.IMF','8.IMF','12.IMF')
 
 % Plot of IMFs (zoomed)
 figure
-hold on
-plot(x, IMF_cell{1});
-plot(x, IMF_cell{2});
-plot(x, IMF_cell{4});
-plot(x, IMF_cell{6});
-plot(x, IMF_cell{10});
+for u = [1, 2, 4, 8, 12]
+    hold on
+    plot(x, IMF_cell{u});
+end
 xlim([4 5.5])
 ylim([-0.12 0.12])
 xlabel('Time [s]')
 ylabel('Amplitude [dB]')
 title('IMF comparison (from 4 to 5.5 s)')
-legend('1.IMF','2.IMF','4.IMF','6.IMF','10.IMF')
+legend('1.IMF','2.IMF','4.IMF','8.IMF','12.IMF')
+
+% Subplot of IMFs
+figure
+for i = 1:2:num_imf
+    subplot(12,1,i);
+    plot(x, IMF_cell{i});
+    title(sprintf('%d. IMF', i))
+    xlim([4.2 4.6])
+    %ylim([-0.2 0.2])
+    xlabel('Time [s]')
+    ylabel('Amp [dB]')
+end
 
 %% Amplitude spectrum
 figure; 
 hold on;
 n = length(y); 
-for j = [1, 2, 4, 6, 10]
+for j = [1, 2, 4, 8, 12]
     fft_out = fft(signals_cell{j}); 
     P2 = abs(fft_out) / n; 
     P1 = P2(1:n/2+1); 
@@ -81,14 +89,14 @@ ylim([0 0.01])
 xlabel('Frequency [Hz]')
 ylabel('Amplitude [dB]')
 title('Amplitude spectrum')
-legend('1.IMF','2.IMF','4.IMF','6.IMF','10.IMF')
+legend('1.IMF','2.IMF','4.IMF','8.IMF','12.IMF')
 
 %% Instantaneous frequency
 num_iterations = 1; 
 num_used_imf = 3;
 res_freq = cell(num_used_imf, 1);
 S_criterion = 6; 
-array_iterations = [10, 15, 100];
+array_iterations = [10, 25, 100];
 
 for i = array_iterations
     used_imf = cell(num_used_imf, 1);
@@ -102,7 +110,7 @@ for i = array_iterations
         hilb_imf = hilbert(used_imf{j}); % Compute the Hilbert transform of the input IMF
         inst_phase = unwrap(angle(hilb_imf)); % instantaneous phase of the IMF as the angle of the Hilbert transform
         inst_freq = diff(inst_phase) / (2*pi/Fs); % instantaneous frequency of the IMF as the derivative of the instantaneous phase
-        
+        %inst_freq = Fs / (2*pi) * diff(inst_phase);
         res_freq{num_iterations, j} = inst_freq;
     end 
     num_iterations = num_iterations + 1; 
