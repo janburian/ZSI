@@ -18,7 +18,7 @@ t = length(y) / Fs; % time of signal
 figure; 
 time_domain_spectrogram(y, Fs); % parasitic frequency: 6000 Hz
 
-%% FIR and IIR filters
+%% 1. FIR and IIR filters
 %% FIR lowpass filter based on filterDesigner toolbox
 % Application of FIR lowpass filter on signal
 Num = load('FIR_lowpass_designer_toolbox.mat');
@@ -54,11 +54,11 @@ flag = 'noscale';  % no normalization
 % Windows
 %win = rectwin(n);
 %win = hann(n);
-win = hamming(n); % best
+window = hamming(n); % best
 %win = blackman(n);
 
 % FIR_coeffs
-b  = fir1(n-1, Fc, 'low', win, flag);    
+b  = fir1(n-1, Fc, 'low', window, flag);    
 fvtool(b,1)
 
 % Filter application
@@ -80,10 +80,10 @@ flag = 'noscale';
 
 %win = rectwin(n);
 %win = hann(n);
-win = hamming(n);
+window = hamming(n);
 %win = blackman(n);
 
-b  = fir1(n-1, [Fc1 Fc2]/(Fs/2), 'stop', win, flag);  % getting coefs
+b  = fir1(n-1, [Fc1 Fc2]/(Fs/2), 'stop', window, flag);  % getting coefs
 %fvtool(b,1)
 
 filtered_output = filter(b,1,y);    % application of the filter
@@ -163,7 +163,76 @@ title(sprintf('Spectrogram of the filtered signal; n = %d', n))
 player = audioplayer(filtered_output,Fs);
 playblocking(player)
 
-%%  
+%% Custom FIR low pass filter
+% Define the filter specifications
+fc = 5800; % Cut-off frequency
+N = 1000; % Filter order
+
+% Compute the filter coefficients
+wc = 2*pi*fc/Fs; % Normalized cut-off frequency
+b = zeros(1, N+1); % Initialize the filter coefficients
+for n = 0:N
+    if n == N/2
+        b(n+1) = wc/pi;
+    else
+        b(n+1) = sin(wc*(n-N/2))/(pi*(n-N/2));
+    end
+end
+
+% Apply the filter to a signal
+filtered_output = filter(b, 1, y); % Apply the filter to the signal
+
+% Spectrogram
+spektrogram(filtered_output, Fs);
+title(sprintf('Spectrogram of the filtered signal; n = %d', n))
+
+% Play filtered signal
+player = audioplayer(filtered_output,Fs);
+playblocking(player)
+
+%% 2. Changing sampling frequency
+target_sampling_frequency = 8000;
+
+% Application of FIR low pass filter (antialising filter) to prevent aliasing effect
+N    = 255;        
+Fc1  = 3900;    
+Fc2  = Fs/2 - 0.000001;  % getting rid of the frequencies > 4000
+flag = 'noscale';  
+
+window = hamming(N); 
+b  = fir1(N-1, [Fc1 Fc2]/(Fs/2), 'stop', window, flag);  % filter coeffs
+
+% Apply the filter to a signal
+filtered_output = filter(b, 1, y);
+
+% Spectrogram
+spektrogram(filtered_output, Fs);
+title(sprintf('Spectrogram of the filtered signal; FIR low pass filter with n = %d', N))
+
+% Ratio
+ratio = target_sampling_frequency / Fs; 
+
+% Number of output samples
+num_output_samples = round(length(filtered_output) * ratio); 
+
+% Initialize output vector
+signal_resampled = zeros(num_output_samples, 1);
+
+% Resampling signal
+for i = 1:num_output_samples
+    x = (i-1) / ratio + 1;
+    % get the corresponding value from the original audio
+    y_value = interpolation(x, filtered_output);
+    % write the new sample to the resampled audio
+    signal_resampled(i) = y_value;
+end
+
+spektrogram(signal_resampled,fs_required);
+title('Spektrogram prevzorkovaneho signalu')
+audiowrite("resampled_audio.wav", signal_resampled, target_sampling_frequency);
+
+
+
 
 
 
