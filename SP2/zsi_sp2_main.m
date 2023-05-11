@@ -13,11 +13,17 @@ t = length(y) / Fs; % time of signal
 %Ts = 1 / Fs; % sampling period
 x = linspace(0, t, length(y));
 
-figure; 
+figure 
 plot(x, y);
 title("Loaded signal");
 xlabel("Time [s]");
 ylabel("Amplitude");
+
+% Spectrogram
+figure
+window = 1024;
+spectrogram(y, window, [], [], Fs, 'yaxis');
+title("Spectrogram of loaded signal");
 
 %% Empirical mode decomposition
 num_iterations = 12;
@@ -44,7 +50,7 @@ ylim([-0.8 0.8])
 xlabel('Time [s]')
 ylabel('Amplitude [dB]')
 title('IMF comparison')
-legend('1. IMF','2.IMF','4.IMF','8.IMF','12.IMF')
+legend('IMF 1','IMF 2','IMF 4','IMF 8','IMF 12')
 
 % Plot of IMFs (zoomed)
 figure
@@ -57,18 +63,18 @@ ylim([-0.12 0.12])
 xlabel('Time [s]')
 ylabel('Amplitude [dB]')
 title('IMF comparison (from 4 to 5.5 s)')
-legend('1.IMF','2.IMF','4.IMF','8.IMF','12.IMF')
+legend('IMF 1','IMF 2','IMF 4','IMF 8','IMF 12')
 
-% Subplot of IMFs
+% Subplot of components
 figure
-for i = 1:2:num_imf
+sgtitle('Signal components')
+for i = 1:num_imf
     subplot(12,1,i);
     plot(x, IMF_cell{i});
-    title(sprintf('%d. IMF', i))
     xlim([4.2 4.6])
     %ylim([-0.2 0.2])
-    xlabel('Time [s]')
-    ylabel('Amp [dB]')
+    ylabel(sprintf('c%d', i))
+    set(gca,'XTick',[], 'YTick', [])
 end
 
 %% Amplitude spectrum
@@ -85,11 +91,11 @@ for j = [1, 2, 4, 8, 12]
 end
 
 xlim([0 6500])
-ylim([0 0.01])
+ylim([0 0.006])
 xlabel('Frequency [Hz]')
 ylabel('Amplitude [dB]')
 title('Amplitude spectrum')
-legend('1.IMF','2.IMF','4.IMF','8.IMF','12.IMF')
+legend('IMF 1','IMF 2','IMF 4','IMF 8','IMF 12')
 
 %% Instantaneous frequency
 num_iterations = 1; 
@@ -107,7 +113,7 @@ for i = array_iterations
     for j = 1:num_used_imf
         used_imf{j} = get_imf(signals{j}, i, S_criterion);
         signals{j+1} = signals{j} - used_imf{j};
-        hilb_imf = hilbert(used_imf{j}); % Compute the Hilbert transform of the input IMF
+        hilb_imf = hilbert(used_imf{j}); % compute the Hilbert transform of the input IMF
         inst_phase = unwrap(angle(hilb_imf)); % instantaneous phase of the IMF as the angle of the Hilbert transform
         inst_freq = diff(inst_phase) / (2*pi/Fs); % instantaneous frequency of the IMF as the derivative of the instantaneous phase
         %inst_freq = Fs / (2*pi) * diff(inst_phase);
@@ -120,8 +126,9 @@ t = length(res_freq{1,1}) / Fs; % time of signal
 x = linspace(0, t, length(res_freq{1,1})); % generating x vector
 
 for i = 1:num_used_imf
+    figure
     for j =1:num_used_imf
-        figure
+        subplot(3,1,j)
         plot(x, res_freq{i,j});
         ylabel('Frequency [Hz]')
         xlabel('Time [s]')

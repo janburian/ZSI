@@ -1,4 +1,4 @@
-%% Identification of local extrema
+%% Identification of local extremes
 function [extremes_min, extremes_max] = get_local_extremes(y)
     d = diff(y); 
     d_1 = d(1:end-1);
