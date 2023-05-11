@@ -47,8 +47,8 @@ player = audioplayer(filtered_output,Fs);
 playblocking(player)
 
 %% FIR lowpass filter
-n    = 150;         % filter order
-Fc   = 0.25;        % cutoff frequency (normalized)
+n    = 19;         % filter order
+Fc   = 0.25;        % cutoff frequency
 flag = 'noscale';  % no normalization
 
 % Windows
@@ -59,12 +59,12 @@ win = hamming(n);
 
 % FIR_coeffs
 b  = fir1(n-1, Fc, 'low', win, flag);    
-%fvtool(b,1)
+fvtool(b,1)
 
 % Filter application
 filtered_output = filter(b,1,y);  
 
-% Spectrogram
+% 
 spektrogram(filtered_output, Fs);
 title(sprintf('Spectrogram of the filtered signal; n = %d', n))
 
