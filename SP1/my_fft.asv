@@ -1,0 +1,39 @@
+function [Y] = my_fft(time_samples)
+% function which represents the custom Fast Furier Transformation
+    
+    signal_length = length(time_samples);  % length of signal
+        
+    if (mod(signal_length, 2) ~= 0)
+        disp('Length of signal has to be power of 2.')
+        return
+    end
+    
+    % take the odd and even samples
+    even_values = time_samples(1:2:end);
+    odd_values = time_samples(2:2:end);
+
+    % end condition if there are only two samples left (based on ZSI
+    % lecture)
+    if (signal_length == 2)
+        Y(1) = time_samples(1) + time_samples(2);
+        Y(2) = time_samples(1) - time_samples(2);
+        return
+    end
+
+    % number of samples in first half (no necessary to compute both)
+    one_half = signal_length/2;
+    
+    % recursion
+    Y_odd = my_fft(odd_values);
+    Y_even = myff_transformation(even_values);
+    
+    Y = zeros(1, signal_length);
+
+    for i = 1:one_half
+       complex_value = Y_odd(i) * exp(-1i*2*pi*(i-1)/length(Y)); 
+       Y(i)          = Y_even(i) + complex_value;
+       Y(i+one_half) = Y_even(i) - complex_value;
+    end
+    
+
+end

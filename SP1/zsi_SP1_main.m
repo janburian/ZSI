@@ -202,47 +202,100 @@ player = audioplayer(filtered_output,Fs);
 playblocking(player)
 
 %% 2. Changing sampling frequency
-target_sampling_frequency = 8000;
+target_Fs = 8000;
 
 % Application of IIR low pass filter (antialising filter) to prevent aliasing effect       
-Fc1  = 3900;    
-Fc2  = Fs/2 - 0.000001;  % getting rid of the frequencies > 4000 
+% getting rid of the frequencies > 4000 
 
 chebyshev_resampling = load('IIR_resampling.mat');
 filtered_chebyshev_resampling = filtfilt(chebyshev_resampling.SOS, chebyshev_resampling.G, y);
 
 % Spectrogram
 spektrogram(filtered_chebyshev_resampling, Fs);
-title(sprintf('Spectrogram of the filtered signal; IIR low pass filter with n = %d', N))
+title('Spectrogram of the filtered signal; IIR low pass filter')
 
-% Resampling factor
-resampling_factor = target_sampling_frequency / Fs; 
-
-% Number of output samples
-num_output_samples = round(length(filtered_output) * resampling_factor); 
-
-% Initialize output vector
-signal_resampled = zeros(num_output_samples, 1);
-
-% Resampling signal
-for i = 1:num_output_samples
-    x = (i-1) / resampling_factor + 1;
-    % get the corresponding value from the original audio
-    y_value = interpolation(x, filtered_output);
-    % write the new sample to the resampled audio
-    signal_resampled(i) = y_value;
-end
-
-spektrogram(signal_resampled,fs_required);
-title('Spektrogram prevzorkovaneho signalu')
-audiowrite('resampled_audio.wav', signal_resampled, target_sampling_frequency);
+% % Resampling factor
+% resampling_factor = target_sampling_frequency / Fs; 
+% 
+% % Number of output samples
+% num_output_samples = round(length(filtered_output) * resampling_factor); 
+% 
+% % Initialize output vector
+% signal_resampled = zeros(num_output_samples, 1);
+% 
+% % Resampling signal
+% for i = 1:num_output_samples
+%     x = (i-1) / resampling_factor + 1;
+%     % get the corresponding value from the original audio
+%     y_value = interpolation(x, filtered_output);
+%     % write the new sample to the resampled audio
+%     signal_resampled(i) = y_value;
+% end
+% 
+% spektrogram(signal_resampled,fs_required);
+% title('Spektrogram prevzorkovaneho signalu')
+% audiowrite('resampled_audio.wav', signal_resampled, target_sampling_frequency);
 
 
 %% 
-test_ = resample_signal(filtered_output, Fs, target_sampling_frequency);
-spektrogram(test_, target_sampling_frequency);
+resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
+spektrogram(resampled_signal, target_Fs);
+
+output_filename = 'resampled_sentence.wav';
+audiowrite(output_filename, resampled_signal, target_Fs);
 
 %% 3. Removing additive noise
+% Parameters
+N = 8;
+segment_length = 2^N; % m
+alpha = 0.85;
+
+% Dividing signal into segments 
+segments = divide_signal_into_segments(resampled_signal, segment_length);
+num_segments = length(segments);
+
+% Computing the FFT of the resampled signal
+fft_samples = cell(num_segments, 1);
+for i = 1:num_segments
+    fft_samples{i} = my_fft(segments{i});
+end
+
+% Parameters of the resampled signal
+resampled_signal_length = length(resampled_signal);
+resampled_signal_time = resampled_signal_length / target_Fs;
+
+% Parameters of the noise which we want to remove
+noise_time = 3;  % 3 seconds with noise and without speech
+num_samples = noise_time * (resampled_signal_length / resampled_signal_time);
+num_segments_noise = floor(num_samples / segment_length);
+noise_average = get_noise_average(fft_samples);
+
+% Substraction of the noise
+fft_edited = cell(num_segments,1);
+for i=1:num_segments
+    substraction = abs(fft_samples{i}) - alpha*noise_average;
+    if any(substraction < 0)
+        substraction(substraction < 0) = 0;
+    end
+    fft_edited{i} = ifft(substraction .* exp(1i*angle(fft_samples{i}))); 
+end
+
+% Cell to vector
+signal_without_noise_vec = real([fft_edited{:}]);
+
+% Saving the signal without noise      
+audiowrite('signal_without_noise.wav', signal_without_noise_vec, target_Fs);
+
+spektrogram(signal_without_noise_vec, target_Fs);
+title('Spectrogram of signal after noise removal');
+
+subplot(2,1,1);
+spektrogram(resampled_signal, target_Fs);
+title('Spectrogram of the resampled signal')
+subplot(2,1,2);
+spektrogram(signal_without_noise_vec, target_Fs);
+title('Spectrogram of signal after noise removal')
+
 
 
 
