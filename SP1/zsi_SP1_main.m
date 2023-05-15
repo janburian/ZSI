@@ -7,7 +7,7 @@ close all
 clear all
 
 %% Loading signal from .wav file
-filename = "veta.wav";
+filename = 'veta.wav';
 [y, Fs] = audioread(filename);  
 
 num_samples = length(y); 
@@ -34,21 +34,21 @@ player = audioplayer(filtered_output,Fs);
 playblocking(player)
 
 %% FIR highpass filter based on filterDesigner toolbox
-Num = load('FIR_highpass_designer_toolbox.mat');
-filtered_output = filter(Num.Num,1,y);
-n = filtord(Num.Num, 1); % filter order
-
-% Application of FIR lowpass filter on signal
-spektrogram(filtered_output, Fs);
-title(sprintf('Spectrogram of the filtered signal; n = %d', n))
-
-% Play filtered signal
-player = audioplayer(filtered_output,Fs);
-playblocking(player)
-
+% Num = load('FIR_highpass_designer_toolbox.mat');
+% filtered_output = filter(Num.Num,1,y);
+% n = filtord(Num.Num, 1); % filter order
+% 
+% % Application of FIR lowpass filter on signal
+% spektrogram(filtered_output, Fs);
+% title(sprintf('Spectrogram of the filtered signal; n = %d', n))
+% 
+% % Play filtered signal
+% player = audioplayer(filtered_output,Fs);
+% playblocking(player)
+% Nedava smysl
 %% FIR lowpass filter
-n    = 200;         % filter order
-Fc   = 0.25;        % cutoff frequency (normalized)
+n    = 300;         % filter order
+Fc   = 0.25;        % cutoff frequency (normalized) % 5900 / (0.5 * Fs)
 flag = 'noscale';  % no normalization
 
 % Windows
@@ -69,12 +69,12 @@ spektrogram(filtered_output, Fs);
 title(sprintf('Spectrogram of the filtered signal; n = %d', n))
 
 % Play filtered signal
-player = audioplayer(filtered_output,Fs);
-playblocking(player)
+% player = audioplayer(filtered_output,Fs);
+% playblocking(player)
 
-%% FIR band-pass filter
+%% FIR band-stop filter
 n  = 255;       % filter order for band-pass = n*2
-Fc1  = 5700;    % 1st cutoff frequency [Hz]    
+Fc1  = 5600;    % 1st cutoff frequency [Hz]    
 Fc2  = 6250;    % 2nd cutoff frequency [Hz]
 flag = 'noscale';  
 
@@ -104,20 +104,31 @@ filtered_chebyshev = filtfilt(chebyshev.SOS, chebyshev.G, y);
 spektrogram(filtered_chebyshev, Fs);
 title('Spektrogram signalu po aplikaci IIR lowpass filtru');
 
-player = audioplayer(filtered_output,Fs);
+player = audioplayer(filtered_chebyshev,Fs);
+playblocking(player)
+
+%%
+% Elliptic
+elliptic = load('IIR_lowpass_elliptic.mat');
+filtered_elliptic = filtfilt(elliptic.SOS, elliptic.G, y);
+
+spektrogram(filtered_elliptic, Fs);
+title('Spektrogram signalu po aplikaci IIR lowpass filtru');
+
+player = audioplayer(filtered_elliptic,Fs);
 playblocking(player)
 
 %% IIR band-stop filter based on filterDesigner toolbox
-chebyshev = load('IIR_bandstop_chebyshev_II.mat');
-filtered_chebyshev = filtfilt(chebyshev.SOS, chebyshev.G, y);
+chebyshev_resampling = load('IIR_bandstop_chebyshev_II.mat');
+filtered_chebyshev_II = filtfilt(chebyshev_resampling.SOS, chebyshev_resampling.G, y);
 
-spektrogram(filtered_chebyshev, Fs);
+spektrogram(filtered_chebyshev_II, Fs);
 title('Spektrogram signalu po aplikaci IIR band-stop filtru');
+% 
+% player = audioplayer(filtered_chebyshev_II,Fs);
+% playblocking(player)
 
-player = audioplayer(filtered_output,Fs);
-playblocking(player)
-
-%% IIR band-pass filter
+%% IIR band-stop filter
 n  = 1;       % filter order for band-pass = n*2
 Fc1  = 5900;    % 1st cutoff frequency [Hz]    
 Fc2  = 6100;    % 2nd cutoff frequency [Hz]
@@ -131,14 +142,14 @@ spektrogram(filtered_output, Fs);
 title(sprintf('Spectrogram of the filtered signal; n = %d', n))
 
 % Play filtered signal
-player = audioplayer(filtered_output,Fs);
-playblocking(player)
+% player = audioplayer(filtered_output,Fs);
+% playblocking(player)
 
 %% Counting own filter (band-stop FIR filter)
 % Define the filter specifications
-Fc1 = 5400; % Lower cutoff frequency
-Fc2 = 6500; % Upper cutoff frequency
-N = 200; % Filter order
+Fc1 = 5700; % Lower cutoff frequency
+Fc2 = 6100; % Upper cutoff frequency
+N = 1500; % Filter order
 
 % Compute the filter coefficients
 wc1 = 2*pi*Fc1/Fs; % Normalized lower stopband frequency
@@ -193,34 +204,29 @@ playblocking(player)
 %% 2. Changing sampling frequency
 target_sampling_frequency = 8000;
 
-% Application of FIR low pass filter (antialising filter) to prevent aliasing effect
-N    = 255;        
+% Application of IIR low pass filter (antialising filter) to prevent aliasing effect       
 Fc1  = 3900;    
-Fc2  = Fs/2 - 0.000001;  % getting rid of the frequencies > 4000
-flag = 'noscale';  
+Fc2  = Fs/2 - 0.000001;  % getting rid of the frequencies > 4000 
 
-window = hamming(N); 
-b  = fir1(N-1, [Fc1 Fc2]/(Fs/2), 'stop', window, flag);  % filter coeffs
-
-% Apply the filter to a signal
-filtered_output = filter(b, 1, y);
+chebyshev_resampling = load('IIR_resampling.mat');
+filtered_chebyshev_resampling = filtfilt(chebyshev_resampling.SOS, chebyshev_resampling.G, y);
 
 % Spectrogram
-spektrogram(filtered_output, Fs);
-title(sprintf('Spectrogram of the filtered signal; FIR low pass filter with n = %d', N))
+spektrogram(filtered_chebyshev_resampling, Fs);
+title(sprintf('Spectrogram of the filtered signal; IIR low pass filter with n = %d', N))
 
-% Ratio
-ratio = target_sampling_frequency / Fs; 
+% Resampling factor
+resampling_factor = target_sampling_frequency / Fs; 
 
 % Number of output samples
-num_output_samples = round(length(filtered_output) * ratio); 
+num_output_samples = round(length(filtered_output) * resampling_factor); 
 
 % Initialize output vector
 signal_resampled = zeros(num_output_samples, 1);
 
 % Resampling signal
 for i = 1:num_output_samples
-    x = (i-1) / ratio + 1;
+    x = (i-1) / resampling_factor + 1;
     % get the corresponding value from the original audio
     y_value = interpolation(x, filtered_output);
     % write the new sample to the resampled audio
@@ -229,7 +235,14 @@ end
 
 spektrogram(signal_resampled,fs_required);
 title('Spektrogram prevzorkovaneho signalu')
-audiowrite("resampled_audio.wav", signal_resampled, target_sampling_frequency);
+audiowrite('resampled_audio.wav', signal_resampled, target_sampling_frequency);
+
+
+%% 
+test_ = resample_signal(filtered_output, Fs, target_sampling_frequency);
+spektrogram(test_, target_sampling_frequency);
+
+%% 3. Removing additive noise
 
 
 
