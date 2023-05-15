@@ -1,4 +1,4 @@
-function [noise_average] = get_noise_average(fft_samples)
+function [noise_average] = get_noise_average(num_segments_noise, fft_samples)
 noise_sum = 0;
 
 for j = 1:num_segments_noise

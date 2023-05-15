@@ -33,19 +33,6 @@ title(sprintf('Spectrogram of the filtered signal; FIR lowpass filter (n = %d)',
 player = audioplayer(filtered_output,Fs);
 playblocking(player)
 
-%% FIR highpass filter based on filterDesigner toolbox
-% Num = load('FIR_highpass_designer_toolbox.mat');
-% filtered_output = filter(Num.Num,1,y);
-% n = filtord(Num.Num, 1); % filter order
-% 
-% % Application of FIR lowpass filter on signal
-% spektrogram(filtered_output, Fs);
-% title(sprintf('Spectrogram of the filtered signal; n = %d', n))
-% 
-% % Play filtered signal
-% player = audioplayer(filtered_output,Fs);
-% playblocking(player)
-% Nedava smysl
 %% FIR lowpass filter
 n    = 300;         % filter order
 Fc   = 0.25;        % cutoff frequency (normalized) % 5900 / (0.5 * Fs)
@@ -214,30 +201,6 @@ filtered_chebyshev_resampling = filtfilt(chebyshev_resampling.SOS, chebyshev_res
 spektrogram(filtered_chebyshev_resampling, Fs);
 title('Spectrogram of the filtered signal; IIR low pass filter')
 
-% % Resampling factor
-% resampling_factor = target_sampling_frequency / Fs; 
-% 
-% % Number of output samples
-% num_output_samples = round(length(filtered_output) * resampling_factor); 
-% 
-% % Initialize output vector
-% signal_resampled = zeros(num_output_samples, 1);
-% 
-% % Resampling signal
-% for i = 1:num_output_samples
-%     x = (i-1) / resampling_factor + 1;
-%     % get the corresponding value from the original audio
-%     y_value = interpolation(x, filtered_output);
-%     % write the new sample to the resampled audio
-%     signal_resampled(i) = y_value;
-% end
-% 
-% spektrogram(signal_resampled,fs_required);
-% title('Spektrogram prevzorkovaneho signalu')
-% audiowrite('resampled_audio.wav', signal_resampled, target_sampling_frequency);
-
-
-%% 
 resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
 spektrogram(resampled_signal, target_Fs);
 
@@ -268,7 +231,7 @@ resampled_signal_time = resampled_signal_length / target_Fs;
 noise_time = 3;  % 3 seconds with noise and without speech
 num_samples = noise_time * (resampled_signal_length / resampled_signal_time);
 num_segments_noise = floor(num_samples / segment_length);
-noise_average = get_noise_average(fft_samples);
+noise_average = get_noise_average(num_segments_noise, fft_samples);
 
 % Substraction of the noise
 fft_edited = cell(num_segments,1);
