@@ -2,6 +2,7 @@ function [] = IIR_lowpass_filterDesigner_chebyshev(y, Fs, MAT_file_name, play_fi
 chebyshev = load(MAT_file_name);
 filtered_chebyshev = filtfilt(chebyshev.SOS, chebyshev.G, y);
 
+figure
 spektrogram(filtered_chebyshev, Fs);
 title('Spectrogram of the filtered signal (IIR lowpass - chebyshev)');
 

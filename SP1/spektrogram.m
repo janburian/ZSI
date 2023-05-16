@@ -10,7 +10,6 @@ FFT_resolution = window;
 % Spectrogram
 [y1,f1,t1,p1] = spectrogram(y,window,overlap,FFT_resolution,fs);
 
-figure
 surf(t1,f1,log10(abs(p1)),'EdgeColor','none');
 axis xy; 
 axis tight; 

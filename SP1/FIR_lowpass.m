@@ -9,6 +9,7 @@ fvtool(b,1)
 filtered_output = filter(b,1,y);  
 
 % Spectrogram
+figure
 spektrogram(filtered_output, Fs);
 title(sprintf('Spectrogram of the filtered signal; n = %d', n))
 

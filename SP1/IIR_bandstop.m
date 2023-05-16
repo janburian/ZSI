@@ -6,6 +6,7 @@ fvtool(B, A);
 filtered_output = filter(B,A,y);
 
 % Spectrogram
+figure
 spektrogram(filtered_output, Fs);
 title(sprintf('Spectrogram of the filtered signal (IIR band-stop filter); n = %d', n))
 

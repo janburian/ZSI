@@ -17,6 +17,7 @@ end
 filtered_output = filter(b, 1, y); % Apply the filter to the signal
 
 % Spectrogram
+figure
 spektrogram(filtered_output, Fs);
 title(sprintf('Spectrogram of the filtered signal; n = %d', N))
 

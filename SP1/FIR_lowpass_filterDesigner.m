@@ -7,6 +7,7 @@ n = filtord(Num.Num, 1); % filter order
 fvtool(Num.Num, 1);
 
 % Spectrogram
+figure
 spektrogram(filtered_output, Fs);
 title(sprintf('Spectrogram of the filtered signal; FIR lowpass filter (n = %d)', n))
 

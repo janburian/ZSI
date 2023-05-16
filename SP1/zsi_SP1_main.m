@@ -16,12 +16,13 @@ t = length(y) / Fs; % time of signal
 
 % Spectrogram
 time_domain_spectrogram(y, Fs); % parasitic frequency: 6000 Hz
+figure
 spektrogram(y, Fs);
 title('Spectrogram of the original signal')
 
 %% 1. FIR and IIR filters
 %% FIR lowpass filter based on filterDesigner toolbox
-FIR_lowpass_filterDesigner(y, Fs, './MAT_files/FIR_lowpass_designer_toolbox.mat', true)
+FIR_lowpass_filterDesigner(y, Fs, './MAT_files/FIR_lowpass_designer_toolbox.mat', false)
 
 %% FIR lowpass filter
 n    = 400;         % filter order
@@ -34,7 +35,7 @@ flag = 'noscale';   % no normalization
 window = hamming(n); % best
 %window = blackman(n);
 
-FIR_lowpass(y, Fs, n, Fc, flag, window, true); 
+FIR_lowpass(y, Fs, n, Fc, flag, window, false); 
 
 %% FIR band-stop filter
 n  = 1001;       % filter order for band-pass = n*2
@@ -53,7 +54,7 @@ flag = 'noscale';
 window = hamming(n);
 %window = blackman(n);
 
-FIR_bandstop(y, Fs, n, Fc1, Fc2, flag, window, true)
+FIR_bandstop(y, Fs, n, Fc1, Fc2, flag, window, false)
 
 %% IIR lowpass filter based on filterDesigner toolbox
 % Chebyshev
@@ -97,10 +98,12 @@ chebyshev_resampling = load('./MAT_files/IIR_resampling.mat');
 filtered_chebyshev_resampling = filtfilt(chebyshev_resampling.SOS, chebyshev_resampling.G, y);
 
 % Spectrogram
+figure
 spektrogram(filtered_chebyshev_resampling, Fs);
 title('Spectrogram of the filtered signal; IIR low pass filter')
 
 resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
+figure
 spektrogram(resampled_signal, target_Fs);
 title('Resampled signal')
 
@@ -150,20 +153,19 @@ signal_without_noise_vec = real([fft_edited{:}]);
 % Saving the signal without noise      
 audiowrite('./output/signal_without_noise.wav', signal_without_noise_vec, target_Fs);
 
-spektrogram(resampled_signal, target_Fs);
-title('Spectrogram of the resampled signal')
-
-spektrogram(signal_without_noise_vec, target_Fs);
-title('Spectrogram of signal after noise removal');
-
-% figure
-% subplot(2,1,1);
 % spektrogram(resampled_signal, target_Fs);
 % title('Spectrogram of the resampled signal')
-% subplot(2,1,2);
-% spektrogram(signal_without_noise_vec, target_Fs);
-% title('Spectrogram of signal after noise removal')
 % 
+% spektrogram(signal_without_noise_vec, target_Fs);
+% title('Spectrogram of signal after noise removal');
+
+figure
+subplot(2,1,1);
+spektrogram(resampled_signal, target_Fs);
+title('Spectrogram of the resampled signal')
+subplot(2,1,2);
+spektrogram(signal_without_noise_vec, target_Fs);
+title('Spectrogram of signal after noise removal')
 
 
 

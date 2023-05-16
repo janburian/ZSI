@@ -2,6 +2,7 @@ function [] = IIR_bandstop_filterDesigner(y, Fs, MAT_file_name, play_filtered_ou
 chebyshev_II = load(MAT_file_name);
 filtered_chebyshev_II = filtfilt(chebyshev_II.SOS, chebyshev_II.G, y);
 
+figure
 spektrogram(filtered_chebyshev_II, Fs);
 title('Spektrogram signalu po aplikaci IIR band-stop filtru');
 

@@ -2,6 +2,7 @@ function [] = IIR_lowpass_filterDesigner_elliptic(y, Fs, MAT_file_name, play_fil
 elliptic = load(MAT_file_name);
 filtered_elliptic = filtfilt(elliptic.SOS, elliptic.G, y);
 
+figure
 spektrogram(filtered_elliptic, Fs);
 title('Spectrogram of the filtered signal (IIR lowpass - elliptic)');
 
