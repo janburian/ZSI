@@ -1,12 +1,12 @@
-function [] = FIR_lowpass_custom(y, Fs, N, Fc, play_filtered_output)
+function [] = my_FIR_lowpass(y, Fs, N, Fc, play_filtered_output)
 % Compute the filter coefficients
 wc = 2*pi*Fc/Fs; % Normalized cut-off frequency
 b = zeros(1, N+1); % Initialize the filter coefficients
 for n = 0:N
     if n == N/2
-        b(n+1) = wc/pi;
+        b(n+1) = (1/pi) * wc;
     else
-        b(n+1) = sin(wc*(n-N/2))/(pi*(n-N/2));
+        b(n+1) = (1/(pi*(n-N/2))) * sin(wc*(n-N/2));
     end
 end
 

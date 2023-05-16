@@ -21,33 +21,39 @@ title('Spectrogram of the original signal')
 
 %% 1. FIR and IIR filters
 %% FIR lowpass filter based on filterDesigner toolbox
-FIR_lowpass_filterDesigner(y, Fs, './MAT_files/FIR_lowpass_designer_toolbox.mat', false)
+FIR_lowpass_filterDesigner(y, Fs, './MAT_files/FIR_lowpass_designer_toolbox.mat', true)
 
 %% FIR lowpass filter
-n    = 300;         % filter order
-Fc   = 0.25;        % cutoff frequency (normalized) % 5900 / (0.5 * Fs)
-flag = 'noscale';  % no normalization
+n    = 400;         % filter order
+Fc   = 0.26;        % cutoff frequency (normalized) % 5900 / (0.5 * Fs)
+flag = 'noscale';   % no normalization
 
 % Windows
-%win = rectwin(n);
-%win = hann(n);
+%window = rectwin(n);
+%window = hann(n);
 window = hamming(n); % best
-%win = blackman(n);
+%window = blackman(n);
 
-FIR_lowpass(y, Fs, n, Fc, flag, window, false); 
+FIR_lowpass(y, Fs, n, Fc, flag, window, true); 
 
 %% FIR band-stop filter
-n  = 255;       % filter order for band-pass = n*2
-Fc1  = 5600;    % 1st cutoff frequency [Hz]    
-Fc2  = 6250;    % 2nd cutoff frequency [Hz]
+n  = 1001;       % filter order for band-pass = n*2
+Fc1  = 5900;    % 1st cutoff frequency [Hz]    
+Fc2  = 6100;    % 2nd cutoff frequency [Hz]
 flag = 'noscale';  
 
-%win = rectwin(n);
-%win = hann(n);
-window = hamming(n);
-%win = blackman(n);
+% Another parameters
+% n  = 239;       % filter order for band-pass = n*2
+% Fc1  = 5500;    % 1st cutoff frequency [Hz]    
+% Fc2  = 6300;    % 2nd cutoff frequency [Hz]
+% flag = 'noscale';  
 
-FIR_bandstop(y, Fs, n, Fc1, Fc2, flag, window, false)
+%window = rectwin(n);
+%window = hann(n);
+window = hamming(n);
+%window = blackman(n);
+
+FIR_bandstop(y, Fs, n, Fc1, Fc2, flag, window, true)
 
 %% IIR lowpass filter based on filterDesigner toolbox
 % Chebyshev
@@ -57,21 +63,21 @@ IIR_lowpass_filterDesigner_chebyshev(y, Fs, './MAT_files/IIR_lowpass_chebyshev_I
 IIR_lowpass_filterDesigner_elliptic(y, Fs, './MAT_files/IIR_lowpass_elliptic.mat', false)
 
 %% IIR band-stop filter based on filterDesigner toolbox
-IIR_bandstop_filterDesigner(y, Fs, './MAT_files/IIR_bandstop_chebyshev_II.mat', false)
+%IIR_bandstop_filterDesigner(y, Fs, './MAT_files/IIR_bandstop_chebyshev_II.mat', false)
 
 %% IIR band-stop filter
-n  = 1;       % filter order for band-pass = n*2
+n  = 1;         % filter order
 Fc1  = 5900;    % 1st cutoff frequency [Hz]    
 Fc2  = 6100;    % 2nd cutoff frequency [Hz]
 
 IIR_bandstop(y, Fs, n, Fc1, Fc2, false)
 
-%% Custom FIR low pass filter
+%% Counting own FIR low pass filter
 % Define the filter specifications
 Fc = 5800; % Cut-off frequency
 N = 1000; % Filter order
 
-FIR_lowpass_custom(y, Fs, N, Fc, false)
+my_FIR_lowpass(y, Fs, N, Fc, false)
 
 %% Counting own filter (band-stop FIR filter)
 % Define the filter specifications
@@ -96,6 +102,7 @@ title('Spectrogram of the filtered signal; IIR low pass filter')
 
 resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
 spektrogram(resampled_signal, target_Fs);
+title('Resampled signal')
 
 output_filename = './output/resampled_sentence.wav';
 audiowrite(output_filename, resampled_signal, target_Fs);
@@ -104,7 +111,7 @@ audiowrite(output_filename, resampled_signal, target_Fs);
 % Parameters
 N = 8;
 segment_length = 2^N; % m
-alpha = 0.85;
+alpha = 0.83;
 
 % Dividing signal into segments 
 segments = divide_signal_into_segments(resampled_signal, segment_length);
@@ -114,6 +121,7 @@ num_segments = length(segments);
 fft_samples = cell(num_segments, 1);
 for i = 1:num_segments
     fft_samples{i} = my_fft(segments{i});
+    %fft_samples{i} = fft(segments{i});
 end
 
 % Parameters of the resampled signal
@@ -142,16 +150,20 @@ signal_without_noise_vec = real([fft_edited{:}]);
 % Saving the signal without noise      
 audiowrite('./output/signal_without_noise.wav', signal_without_noise_vec, target_Fs);
 
+spektrogram(resampled_signal, target_Fs);
+title('Spectrogram of the resampled signal')
+
 spektrogram(signal_without_noise_vec, target_Fs);
 title('Spectrogram of signal after noise removal');
 
-subplot(2,1,1);
-spektrogram(resampled_signal, target_Fs);
-title('Spectrogram of the resampled signal')
-subplot(2,1,2);
-spektrogram(signal_without_noise_vec, target_Fs);
-title('Spectrogram of signal after noise removal')
-
+% figure
+% subplot(2,1,1);
+% spektrogram(resampled_signal, target_Fs);
+% title('Spectrogram of the resampled signal')
+% subplot(2,1,2);
+% spektrogram(signal_without_noise_vec, target_Fs);
+% title('Spectrogram of signal after noise removal')
+% 
 
 
 
