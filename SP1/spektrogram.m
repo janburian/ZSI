@@ -17,6 +17,6 @@ colormap(jet);
 view(0,90);
 xlabel('Time [s]');
 ylabel('Frequency [Hz]');
-%ylim([0 15000])
+ylim([0 15000])
 
 
