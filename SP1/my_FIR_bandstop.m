@@ -1,4 +1,4 @@
-function [] = FIR_bandstop_custom(y, Fs, N, Fc1, Fc2, play_filtered_output)
+function [] = my_FIR_bandstop(y, Fs, N, Fc1, Fc2, play_filtered_output)
 % Compute the filter coefficients
 wc1 = 2*pi*Fc1/Fs; % Normalized lower stopband frequency
 wc2 = 2*pi*Fc2/Fs; % Normalized upper stopband frequency

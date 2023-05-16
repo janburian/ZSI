@@ -73,7 +73,7 @@ Fc2  = 6100;    % 2nd cutoff frequency [Hz]
 
 IIR_bandstop(y, Fs, n, Fc1, Fc2, false)
 
-%% Counting own FIR low pass filter
+%% Counting own filter (low pass FIR filter)
 % Define the filter specifications
 Fc = 5800; % Cut-off frequency
 N = 1000; % Filter order
@@ -86,7 +86,7 @@ Fc1 = 5700; % Lower cutoff frequency
 Fc2 = 6100; % Upper cutoff frequency
 N = 1500; % Filter order
 
-FIR_bandstop_custom(y, Fs, N, Fc1, Fc2, false)
+my_FIR_bandstop(y, Fs, N, Fc1, Fc2, false)
 
 %% 2. Changing sampling frequency
 target_Fs = 8000;
