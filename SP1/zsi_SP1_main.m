@@ -21,7 +21,7 @@ title('Spectrogram of the original signal')
 
 %% 1. FIR and IIR filters
 %% FIR lowpass filter based on filterDesigner toolbox
-FIR_lowpass_filterDesigner(y, Fs, 'FIR_lowpass_designer_toolbox.mat', false)
+FIR_lowpass_filterDesigner(y, Fs, './MAT_files/FIR_lowpass_designer_toolbox.mat', false)
 
 %% FIR lowpass filter
 n    = 300;         % filter order
@@ -51,13 +51,13 @@ FIR_bandstop(y, Fs, n, Fc1, Fc2, flag, window, false)
 
 %% IIR lowpass filter based on filterDesigner toolbox
 % Chebyshev
-IIR_lowpass_filterDesigner_chebyshev(y, Fs, 'IIR_lowpass_chebyshev_I.mat', false)
+IIR_lowpass_filterDesigner_chebyshev(y, Fs, './MAT_files/IIR_lowpass_chebyshev_I.mat', false)
 
 % Elliptic
-IIR_lowpass_filterDesigner_elliptic(y, Fs, 'IIR_lowpass_elliptic.mat', false)
+IIR_lowpass_filterDesigner_elliptic(y, Fs, './MAT_files/IIR_lowpass_elliptic.mat', false)
 
 %% IIR band-stop filter based on filterDesigner toolbox
-IIR_bandstop_filterDesigner(y, Fs, 'IIR_bandstop_chebyshev_II.mat', false)
+IIR_bandstop_filterDesigner(y, Fs, './MAT_files/IIR_bandstop_chebyshev_II.mat', false)
 
 %% IIR band-stop filter
 n  = 1;       % filter order for band-pass = n*2
@@ -87,7 +87,7 @@ target_Fs = 8000;
 % Application of IIR low pass filter (antialising filter) to prevent aliasing effect       
 % getting rid of the frequencies > 4000 
 
-chebyshev_resampling = load('IIR_resampling.mat');
+chebyshev_resampling = load('./MAT_files/IIR_resampling.mat');
 filtered_chebyshev_resampling = filtfilt(chebyshev_resampling.SOS, chebyshev_resampling.G, y);
 
 % Spectrogram
