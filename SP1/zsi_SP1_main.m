@@ -97,7 +97,7 @@ title('Spectrogram of the filtered signal; IIR low pass filter')
 resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
 spektrogram(resampled_signal, target_Fs);
 
-output_filename = 'resampled_sentence.wav';
+output_filename = './output/resampled_sentence.wav';
 audiowrite(output_filename, resampled_signal, target_Fs);
 
 %% 3. Removing additive noise
@@ -140,7 +140,7 @@ end
 signal_without_noise_vec = real([fft_edited{:}]);
 
 % Saving the signal without noise      
-audiowrite('signal_without_noise.wav', signal_without_noise_vec, target_Fs);
+audiowrite('./output/signal_without_noise.wav', signal_without_noise_vec, target_Fs);
 
 spektrogram(signal_without_noise_vec, target_Fs);
 title('Spectrogram of signal after noise removal');
