@@ -73,7 +73,7 @@ Fc2  = 6100;    % 2nd cutoff frequency [Hz]
 
 IIR_bandstop(y, Fs, n, Fc1, Fc2, false);
 
-%% Counting own filter (low pass FIR filter)
+%% Counting own filter (low-pass FIR filter)
 % Define the filter specifications
 Fc = 5800; % Cut-off frequency
 N = 1000; % Filter order
@@ -100,19 +100,19 @@ filtered_chebyshev_resampling = filtfilt(chebyshev_resampling.SOS, chebyshev_res
 % Spectrogram
 figure
 spektrogram(filtered_chebyshev_resampling, Fs);
-title('Spectrogram of the filtered signal; IIR low pass filter')
+title('Spectrogram of the filtered signal; IIR low-pass filter')
 
 resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
 figure
 spektrogram(resampled_signal, target_Fs);
-title('Resampled signal')
+title('Spectrogram of the resampled signal')
 
 output_filename = './output/resampled_sentence.wav';
 audiowrite(output_filename, resampled_signal, target_Fs);
 
 %% 3. Removing additive noise
 % Parameters
-N = 8;
+N = 14;
 segment_length = 2^N; % m
 alpha = 0.83;
 
@@ -132,7 +132,7 @@ resampled_signal_length = length(resampled_signal);
 resampled_signal_time = resampled_signal_length / target_Fs;
 
 % Parameters of the noise which we want to remove
-noise_time = 3;  % 3 seconds with noise and without speech
+noise_time = ;  % 3 seconds with noise and without speech
 num_samples = noise_time * (resampled_signal_length / resampled_signal_time);
 num_segments_noise = floor(num_samples / segment_length);
 noise_average = get_noise_average(num_segments_noise, fft_samples);

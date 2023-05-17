@@ -105,7 +105,7 @@ title('Spectrogram of the filtered signal; IIR low-pass filter')
 resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
 figure
 spektrogram(resampled_signal, target_Fs);
-title('Resampled signal')
+title('Spectrogram of the resampled signal')
 
 output_filename = './output/resampled_sentence.wav';
 audiowrite(output_filename, resampled_signal, target_Fs);
