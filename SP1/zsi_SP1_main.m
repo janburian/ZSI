@@ -66,7 +66,7 @@ IIR_lowpass_filterDesigner_elliptic(y, Fs, './MAT_files/IIR_lowpass_elliptic.mat
 %% IIR band-stop filter based on filterDesigner toolbox
 %IIR_bandstop_filterDesigner(y, Fs, './MAT_files/IIR_bandstop_chebyshev_II.mat', false);
 
-%% IIR band-stop filter
+%% IIR band-stop filter (Best)
 n  = 1;         % filter order
 Fc1  = 5900;    % 1st cutoff frequency [Hz]    
 Fc2  = 6100;    % 2nd cutoff frequency [Hz]
@@ -114,7 +114,7 @@ audiowrite(output_filename, resampled_signal, target_Fs);
 % Parameters
 N = 8;
 segment_length = 2^N; % m
-alpha = 0.83;
+alpha = 6;
 
 % Dividing signal into segments 
 segments = divide_signal_into_segments(resampled_signal, segment_length);
