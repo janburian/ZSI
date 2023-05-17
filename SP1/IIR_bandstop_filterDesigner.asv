@@ -4,7 +4,7 @@ filtered_chebyshev_II = filtfilt(chebyshev_II.SOS, chebyshev_II.G, y);
 
 figure
 spektrogram(filtered_chebyshev_II, Fs);
-title('Spectrogram of the filtered signal; IIR band-stop filter');
+title('Spectrogram of the filtered signal; IIR band-stop filter (n = %d)');
 
 if play_filtered_output == true
     player = audioplayer(filtered_output,Fs);

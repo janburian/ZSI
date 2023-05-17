@@ -4,7 +4,7 @@ filtered_elliptic = filtfilt(elliptic.SOS, elliptic.G, y);
 
 figure
 spektrogram(filtered_elliptic, Fs);
-title('Spectrogram of the filtered signal (IIR lowpass - elliptic)');
+title('Spectrogram of the filtered signal (IIR low-pass - elliptic)');
 
 if play_filtered_output == true
     player = audioplayer(filtered_output,Fs);

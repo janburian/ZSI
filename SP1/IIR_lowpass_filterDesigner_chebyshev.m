@@ -4,7 +4,7 @@ filtered_chebyshev = filtfilt(chebyshev.SOS, chebyshev.G, y);
 
 figure
 spektrogram(filtered_chebyshev, Fs);
-title('Spectrogram of the filtered signal (IIR lowpass - chebyshev)');
+title('Spectrogram of the filtered signal (IIR low-pass - chebyshev)');
 
 if play_filtered_output == true
     player = audioplayer(filtered_output,Fs);

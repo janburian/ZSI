@@ -9,7 +9,7 @@ fvtool(Num.Num, 1);
 % Spectrogram
 figure
 spektrogram(filtered_output, Fs);
-title(sprintf('Spectrogram of the filtered signal; FIR lowpass filter (n = %d)', n))
+title(sprintf('Spectrogram of the filtered signal; FIR low-pass filter (n = %d)', n))
 
 % Play filtered signal
 if play_filtered_output == true

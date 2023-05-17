@@ -73,7 +73,7 @@ Fc2  = 6100;    % 2nd cutoff frequency [Hz]
 
 IIR_bandstop(y, Fs, n, Fc1, Fc2, false);
 
-%% Counting own filter (low pass FIR filter)
+%% Counting own filter (low-pass FIR filter)
 % Define the filter specifications
 Fc = 5800; % Cut-off frequency
 N = 1000; % Filter order
@@ -100,7 +100,7 @@ filtered_chebyshev_resampling = filtfilt(chebyshev_resampling.SOS, chebyshev_res
 % Spectrogram
 figure
 spektrogram(filtered_chebyshev_resampling, Fs);
-title('Spectrogram of the filtered signal; IIR low pass filter')
+title('Spectrogram of the filtered signal; IIR low-pass filter')
 
 resampled_signal = resample_signal(filtered_chebyshev_resampling, Fs, target_Fs);
 figure
