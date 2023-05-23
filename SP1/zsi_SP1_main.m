@@ -114,7 +114,7 @@ audiowrite(output_filename, resampled_signal, target_Fs);
 % Parameters
 N = 8;
 segment_length = 2^N; % m
-alpha = 6;
+alpha = 0.83;
 
 % Dividing signal into segments 
 segments = divide_signal_into_segments(resampled_signal, segment_length);
